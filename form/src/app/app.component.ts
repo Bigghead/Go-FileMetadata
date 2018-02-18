@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { FormGroup, FormControl } from '@angular/forms';
-// import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators'
 import { Observable } from 'rxjs/Observable';
+import { _throw } from 'rxjs/observable/throw'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
 
   form :FormGroup;
   headers = new HttpHeaders()
-              .set( 'Content-Type', 'application/json' )
+              // .set( 'Content-Type', 'application/json' )
 
   ngOnInit(){
     this.initForm()
@@ -39,9 +39,10 @@ export class AppComponent implements OnInit {
         let formData:FormData = new FormData();
         formData.append('uploadFile', file, file.name);
 
-        headers = this.headers.append('Content-Type', 'multipart/form-data');
         this.http.post(`/file`, formData, { headers } )
-            .pipe(catchError(error => Observable.throw(error))
+            .pipe( catchError( error => {
+              return new Observable( obs => obs.error( error ))
+            } )
             )
             .subscribe(
               data => console.log('success'),
