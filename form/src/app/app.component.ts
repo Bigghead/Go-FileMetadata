@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
             } )
             )
             .subscribe(
-              data => console.log('success'),
+              data => console.log(data),
               error => console.log(error)
             )
     }

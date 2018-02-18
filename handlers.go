@@ -22,6 +22,9 @@ func homeRoute(w http.ResponseWriter, r *http.Request) {
 
 func handleFile(w http.ResponseWriter, r *http.Request) {
 
+	// ==== read file upload, make a new file ===== //
+	// ==== copy contents into a new file, read new file metadata ===== //
+
 	if r.Method == "POST" {
 		r.ParseMultipartForm(24)
 		file, handler, err := r.FormFile("uploadFile")
@@ -57,7 +60,6 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println(string(a))
 		json.NewEncoder(w).Encode(fileMetadata)
 	}
 }
