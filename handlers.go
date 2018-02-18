@@ -1,18 +1,27 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"time"
 )
+
+type metaData struct {
+	Name  string
+	Size  int64
+	Time  time.Time
+	IsDir bool
+}
 
 func homeRoute(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 }
 
 func handleFile(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Header)
+
 	if r.Method == "POST" {
 		r.ParseMultipartForm(24)
 		file, handler, err := r.FormFile("uploadFile")
@@ -31,15 +40,24 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 		defer f.Close()
 
 		io.Copy(f, file)
-		// fmt.Println(handler)
 
-		image, err := os.Open(string(handler.Filename))
+		image, err := os.Stat(string(handler.Filename))
 		if err != nil {
 			os.Exit(1)
 		}
 
-		defer image.Close()
+		fileMetadata := metaData{
+			Name:  image.Name(),
+			Size:  image.Size(),
+			Time:  image.ModTime(),
+			IsDir: image.IsDir(),
+		}
 
-		fmt.Println(image)
+		a, err := json.Marshal(fileMetadata)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(a))
+		json.NewEncoder(w).Encode(fileMetadata)
 	}
 }
