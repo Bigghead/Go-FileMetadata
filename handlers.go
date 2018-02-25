@@ -56,10 +56,10 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 			IsDir: image.IsDir(),
 		}
 
-		a, err := json.Marshal(fileMetadata)
-		if err != nil {
-			fmt.Println(err)
-		}
+		// a, err := json.Marshal(fileMetadata)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
 		json.NewEncoder(w).Encode(fileMetadata)
 	}
 }
